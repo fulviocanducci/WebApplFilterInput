@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,19 +26,19 @@ namespace WebApplFilterInput.Pages
 
         }
 
+        public async Task<IActionResult> OnGetResultAsync(string word)
+        {
+            return new JsonResult(await GetResult(word));
+        }
+
         public async Task<IActionResult> OnPostResultAsync(string word)
         {
-            //var result = await DataContext
-            //    .Car
-            //    .Where(x => x.Title.Contains(word))
-            //    .Select(x => new
-            //    {
-            //        id = x.Id,
-            //        name = x.Title
-            //    })
-            //    .ToListAsync();
+            return new JsonResult(await GetResult(word));
+        }
 
-            var result = await DataContext
+        public async Task<dynamic> GetResult(string word)
+        {            
+            return await DataContext
                 .Car
                 .FromSql($"SELECT * FROM Car WHERE Title LIKE @p0 COLLATE NOCASE ORDER BY Title ASC", $"%{word}%")
                 .Select(x => new
@@ -49,8 +47,6 @@ namespace WebApplFilterInput.Pages
                     name = x.Title
                 })
                 .ToListAsync();
-
-            return new JsonResult(result);
         }
     }
 }

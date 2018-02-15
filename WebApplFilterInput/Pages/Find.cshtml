@@ -1,59 +1,81 @@
 ﻿@page "{handler:alpha?}"
 @model WebApplFilterInput.Pages.FindModel
-@{
-    ViewData["Title"] = "Find";
-}
-
+@{ ViewData["Title"] = "Find"; }
 <h2>Find</h2>
-
 <br />
-
-<form name="form1" id="form1" method="post">
-    <input type="text" name="id" id="id" readonly style="width:38px;text-align:center" />
-    <input type="text" name="f" id="f" tabindex="0" />
-</form>
-
+<div class="row">
+    <div class="col-lg-4">
+        <form class="form-inline">
+            <h1>Metodo Get</h1>
+            <input type="text" name="idget" id="idget" class="form-control" readonly style="width:38px;text-align:center" />
+            <input type="text" name="fget" id="fget" class="form-control" tabindex="0" />
+        </form>
+    </div>
+    <div class="col-lg-4">
+        <h1>Metodo Post</h1>
+        <form name="form1" id="form1" method="post" class="form-inline">
+            <input type="text" name="idpost" id="idpost" class="form-control" readonly style="width:38px;text-align:center" />
+            <input type="text" name="fpost" id="fpost" class="form-control" tabindex="1" />
+        </form>
+    </div>
+</div>
 <br />
 @*//https://github.com/bassjobsen/Bootstrap-3-Typeahead*@
-
 @section Scripts{
-    <script>
+<script>
 
-    var url = '@Url.Page("find", "result")';
-    $('#f').typeahead({
-        source: function (query, process) {
-            post(url, query, process);
-        },
-        minLength: 2,
-        afterSelect: function (item) {
-            console.log(item);
-            $("#id").val(item.id);
-        }
-    });
-    function post(url, query, process) {
-        $.ajax({
-            type: "POST",
-            url: url,
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("RequestVerificationToken",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
+        var url = '@Url.Page("find", "result")';    
+    
+        $('#fget').typeahead({
+            source: function (query, process) {
+                get(url, query, process);
             },
-            dataType: "json",
-            data: { word: query },
-            success: function (response) {
-                process(response);
-            },
-            failure: function (response) {
-                alert(response);
+            minLength: 2,
+            afterSelect: function (item) {
+                $("#idget").val(item.id);
             }
         });
+
+        $('#fpost').typeahead({
+            source: function (query, process) {
+                post(url, query, process);
+            },
+            minLength: 2,
+            afterSelect: function (item) {                
+                $("#idpost").val(item.id);
+            }
+        });
+
+        function get(url, query, process) {
+            $.getJSON(url, { word: query }, function (response) {
+                process(response);
+            });
+        }
+
+        function post(url, query, process) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("RequestVerificationToken",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                dataType: "json",
+                data: { word: query },
+                success: function (response) {
+                    process(response);
+                },
+                failure: function (response) {
+                    alert(response);
+                }
+            });
         }
 
         $(function () {
-            $("#f").focus();
-        })
+            $("#fget").focus();
+        });
 
 
-    </script>
+</script>
 }
 
