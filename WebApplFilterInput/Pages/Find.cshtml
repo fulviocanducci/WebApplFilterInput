@@ -1,0 +1,59 @@
+﻿@page "{handler:alpha?}"
+@model WebApplFilterInput.Pages.FindModel
+@{
+    ViewData["Title"] = "Find";
+}
+
+<h2>Find</h2>
+
+<br />
+
+<form name="form1" id="form1" method="post">
+    <input type="text" name="id" id="id" readonly style="width:38px;text-align:center" />
+    <input type="text" name="f" id="f" tabindex="0" />
+</form>
+
+<br />
+@*//https://github.com/bassjobsen/Bootstrap-3-Typeahead*@
+
+@section Scripts{
+    <script>
+
+    var url = '@Url.Page("find", "result")';
+    $('#f').typeahead({
+        source: function (query, process) {
+            post(url, query, process);
+        },
+        minLength: 2,
+        afterSelect: function (item) {
+            console.log(item);
+            $("#id").val(item.id);
+        }
+    });
+    function post(url, query, process) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("RequestVerificationToken",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            data: { word: query },
+            success: function (response) {
+                process(response);
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+        }
+
+        $(function () {
+            $("#f").focus();
+        })
+
+
+    </script>
+}
+
